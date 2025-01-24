@@ -1,10 +1,13 @@
 package application
 
 import (
+	"errors"
 	"log"
 	"os"
 	"runtime"
 )
+
+var ErrEmptyPath = errors.New("path to file is not specified")
 
 func HandlePanic(fn func()) {
 	defer func() {

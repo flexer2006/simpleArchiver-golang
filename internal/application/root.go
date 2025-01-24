@@ -5,7 +5,8 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-	Short: "Simple Archiver",
+	Use:   "simpleArchiver",
+	Short: "A simple archiver program",
 }
 
 func Execute() {

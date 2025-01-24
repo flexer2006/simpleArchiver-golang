@@ -1,6 +1,8 @@
 package application
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
 
 var packCmd = &cobra.Command{
 	Use:   "pack",
