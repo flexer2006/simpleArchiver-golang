@@ -19,7 +19,6 @@ var Vlc = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		application.HandlePanic(func() {
 			application.HandleError(func() error {
-
 				if len(args) == 0 || args[0] == "" {
 					return application.ErrEmptyPath
 				}
@@ -30,17 +29,14 @@ var Vlc = &cobra.Command{
 }
 
 func pack(filePath string) error {
-
-	file, err := os.Open(filePath)
+	file, err := openFile(filePath)
 	if err != nil {
 		return err
 	}
 
-	defer func() {
-		application.HandleError(func() error {
-			return file.Close()
-		})
-	}()
+	defer application.HandleError(func() error {
+		return file.Close()
+	})
 
 	log.Printf("File %s opened successfully", filePath)
 
@@ -50,15 +46,27 @@ func pack(filePath string) error {
 	}
 	log.Printf("Read %d bytes from file %s", len(data), filePath)
 
+	// Преобразуем данные через Encode
+	encodedData := Encode(string(data))
+	log.Printf("Encoded data: %s", encodedData)
+
 	outputFileName := packedFileName(filePath)
 
-	err = writeFile(outputFileName, data)
+	err = writeFile(outputFileName, []byte(encodedData))
 	if err != nil {
 		return err
 	}
 
 	log.Printf("Packed file saved as %s", outputFileName)
 	return nil
+}
+
+func openFile(filePath string) (*os.File, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
 func readFile(file *os.File) ([]byte, error) {
@@ -83,6 +91,7 @@ func packedFileName(path string) string {
 }
 
 func init() {
+
 	application.HandlePanic(func() {
 		application.HandleError(func() error {
 			application.RootCmd.AddCommand(Vlc)
